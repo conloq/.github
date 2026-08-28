@@ -1,12 +1,14 @@
 # Conloq
 
-A Conloq reúne projetos acadêmicos e de software voltados à construção de soluções acessíveis, organizadas e baseadas em tecnologia.
+A Conloq desenvolve soluções multiplataforma para o ecossistema das cervejarias artesanais. Com o Mash, produtores acompanham informações importantes da mosturação e analisam seus registros com mais clareza.
+
+O foco atual é apoiar o acompanhamento de temperatura, o teste de iodo e o registro das análises, sem substituir a validação do processo pelo produtor.
 
 ## Projetos
 
 ### Mash
 
-O Mash é um Projeto Integrador acadêmico sobre o apoio ao monitoramento da mosturação e à realização do teste de iodo na produção de cerveja artesanal.
+O Mash é um projeto acadêmico chamado Projeto Integrador. Ele funciona como o trabalho de conclusão do curso, de forma semelhante a um TCC, e trata do apoio ao monitoramento da mosturação e à realização do teste de iodo na produção de cerveja artesanal.
 
 O projeto reúne:
 
