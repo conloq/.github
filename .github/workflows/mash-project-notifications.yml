@@ -1,6 +1,11 @@
 name: Mash Project notifications
 
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/mash-project-notifications.yml"
+      - "automation/**"
+      - "tests/**"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -55,7 +60,7 @@ jobs:
         run: printf 'MASH_DRY_RUN=false\n' >> "$GITHUB_ENV"
 
       - name: Reconcile Project and repositories
-        if: ${{ github.event_name == 'workflow_dispatch' || vars.MASH_NOTIFICATIONS_ENABLED == 'true' }}
+        if: ${{ github.event_name != 'pull_request' && (github.event_name == 'workflow_dispatch' || vars.MASH_NOTIFICATIONS_ENABLED == 'true') }}
         env:
           MASH_PROJECT_TOKEN: ${{ secrets.MASH_PROJECT_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
