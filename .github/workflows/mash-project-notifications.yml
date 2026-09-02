@@ -1,0 +1,94 @@
+name: Mash Project notifications
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/mash-project-notifications.yml"
+      - "automation/**"
+      - "tests/**"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Calcular e mostrar sem publicar comentários"
+        required: true
+        default: true
+        type: boolean
+      force_daily:
+        description: "Forçar o resumo diário nesta execução manual"
+        required: true
+        default: false
+        type: boolean
+  schedule:
+    - cron: "*/15 * * * *"
+    - cron: "0 12 * * *"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: mash-project-notifications
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    name: Reconcile Mash Project
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout central automation
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+
+      - name: Run regression tests
+        run: python -m pytest -q tests/mash_project_notifier
+
+      - name: Configure execution mode
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        env:
+          DISPATCH_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          printf 'MASH_DRY_RUN=%s\n' "$DISPATCH_DRY_RUN" >> "$GITHUB_ENV"
+
+      - name: Configure scheduled execution mode
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          printf 'MASH_DRY_RUN=false\n' >> "$GITHUB_ENV"
+          printf 'MASH_FORCE_DAILY=false\n' >> "$GITHUB_ENV"
+
+      - name: Configure manual summary mode
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        env:
+          DISPATCH_FORCE_DAILY: ${{ inputs.force_daily }}
+        run: printf 'MASH_FORCE_DAILY=%s\n' "$DISPATCH_FORCE_DAILY" >> "$GITHUB_ENV"
+
+      - name: Reconcile Project and repositories
+        if: ${{ github.event_name != 'pull_request' && (github.event_name == 'workflow_dispatch' || vars.MASH_NOTIFICATIONS_ENABLED == 'true') }}
+        env:
+          MASH_PROJECT_TOKEN: ${{ secrets.MASH_PROJECT_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          MASH_TRACKER_ISSUE_NUMBER: ${{ vars.MASH_TRACKER_ISSUE_NUMBER }}
+          EVENT_NAME: ${{ github.event_name }}
+          PYTHONPATH: .
+        shell: bash
+        run: |
+          if [[ "$MASH_DRY_RUN" != "true" && ( -z "$MASH_PROJECT_TOKEN" || -z "$MASH_TRACKER_ISSUE_NUMBER" ) ]]; then
+            echo "Live notifications are waiting for MASH_PROJECT_TOKEN and MASH_TRACKER_ISSUE_NUMBER."
+            exit 0
+          fi
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && "$MASH_FORCE_DAILY" == "true" ]]; then
+            python -m automation.mash_project_notifier.main --daily
+          else
+            python -m automation.mash_project_notifier.main
+          fi
