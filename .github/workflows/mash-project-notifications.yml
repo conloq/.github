@@ -13,6 +13,11 @@ on:
         required: true
         default: true
         type: boolean
+      force_daily:
+        description: "Forçar o resumo diário nesta execução manual"
+        required: true
+        default: false
+        type: boolean
   schedule:
     - cron: "*/15 * * * *"
     - cron: "0 12 * * *"
@@ -57,7 +62,16 @@ jobs:
       - name: Configure scheduled execution mode
         if: ${{ github.event_name != 'workflow_dispatch' }}
         shell: bash
-        run: printf 'MASH_DRY_RUN=false\n' >> "$GITHUB_ENV"
+        run: |
+          printf 'MASH_DRY_RUN=false\n' >> "$GITHUB_ENV"
+          printf 'MASH_FORCE_DAILY=false\n' >> "$GITHUB_ENV"
+
+      - name: Configure manual summary mode
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        env:
+          DISPATCH_FORCE_DAILY: ${{ inputs.force_daily }}
+        run: printf 'MASH_FORCE_DAILY=%s\n' "$DISPATCH_FORCE_DAILY" >> "$GITHUB_ENV"
 
       - name: Reconcile Project and repositories
         if: ${{ github.event_name != 'pull_request' && (github.event_name == 'workflow_dispatch' || vars.MASH_NOTIFICATIONS_ENABLED == 'true') }}
@@ -65,6 +79,7 @@ jobs:
           MASH_PROJECT_TOKEN: ${{ secrets.MASH_PROJECT_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
           MASH_TRACKER_ISSUE_NUMBER: ${{ vars.MASH_TRACKER_ISSUE_NUMBER }}
+          EVENT_NAME: ${{ github.event_name }}
           PYTHONPATH: .
         shell: bash
         run: |
@@ -72,4 +87,8 @@ jobs:
             echo "Live notifications are waiting for MASH_PROJECT_TOKEN and MASH_TRACKER_ISSUE_NUMBER."
             exit 0
           fi
-          python -m automation.mash_project_notifier.main
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && "$MASH_FORCE_DAILY" == "true" ]]; then
+            python -m automation.mash_project_notifier.main --daily
+          else
+            python -m automation.mash_project_notifier.main
+          fi
