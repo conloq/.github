@@ -12,26 +12,29 @@ O Mash é um projeto acadêmico chamado Projeto Integrador. Ele funciona como o 
 
 O projeto reúne:
 
-- Backend com Node.js, Express, Sequelize e MySQL;
-- Frontend web;
+- Backend com Node.js, Express, Sequelize, MySQL, JWT e Argon2id;
+- Frontend web com Tailwind CSS;
 - Design de interfaces, protótipos e materiais visuais;
 - Artigo científico e documentação;
 - Processamento de imagens com Python e OpenCV como parte prevista da solução;
-- Registro e rastreabilidade de receitas, lotes e análises.
+- Registro e rastreabilidade de receitas, lotes e análises;
+- Automação de notificações de sprint com GitHub Actions e Python.
 
 Repositórios relacionados:
 
 - [Projeto e organização das atividades](https://github.com/conloq/mash)
-- [Backend](https://github.com/conloq/Back-End)
-- [Frontend](https://github.com/conloq/frontend)
+- [Backend — API REST](https://github.com/conloq/Back-End)
+- [Frontend — preview com Tailwind](https://github.com/conloq/frontend)
 - [Landing page](https://github.com/conloq/landing-page-conloq)
+- [Documentação do banco de dados](https://github.com/conloq/database)
+- [Documentação do projeto](https://github.com/conloq/documentation)
 
 ## Organização da equipe
 
-- **Backend:** APIs, banco de dados, regras de negócio e integrações;
-- **Frontend:** telas, componentes, acessibilidade e consumo da API;
-- **Design:** protótipos, identidade visual, landing page, pitch e banner;
-- **Artigo e documentação:** artigo científico, referências, decisões e registros do projeto.
+- **Backend:** APIs, banco de dados, regras de negócio, autenticação JWT/Argon2id e integrações;
+- **Frontend:** telas, componentes Tailwind, acessibilidade e consumo da API REST;
+- **Design:** protótipos Figma, identidade visual, landing page, pitch e banner;
+- **Artigo e documentação:** artigo científico, referências, SWOT, decisões e registros do projeto.
 
 ## Fluxo de trabalho
 
@@ -46,7 +49,7 @@ Repositórios relacionados:
 9. Corrigir os comentários, resolver as conversas e aguardar a aprovação.
 10. Fazer o merge somente quando os critérios do repositório forem atendidos.
 
-Não enviar commits diretamente para `main` quando a branch estiver protegida.
+Não enviar commits diretamente para `main`.
 
 ## Padrão de commits
 
@@ -85,18 +88,13 @@ A descrição deve ser curta, objetiva, escrita em minúsculas e preferencialmen
 ### Exemplos para o Mash
 
 ```text
-feat: adicionar correção de blocos
-fix: corrigir rota de atualização de receita
-docs: explicar fluxo de criação de lote
-refactor: mover regras para o service de usuário
-test: validar acesso de usuário ao próprio lote
-style: ajustar layout da tela de análise
-```
-
-`feat: adicionado` é compreensível, mas a forma recomendada é usar um verbo de ação, por exemplo:
-
-```text
-feat: adicionar correção de blocos
+feat: adicionar CRUD de lotes
+feat: implementar upload de imagem do teste de iodo
+fix: corrigir referência de id no controller de receitas
+fix: corrigir validação de temperatura
+docs: documentar contrato de temperatura e teste de iodo
+refactor: migrar autenticação de session para JWT
+test: adicionar testes do CRUD de lotes
 ```
 
 Para alterações incompatíveis, usar `!` após o tipo ou registrar `BREAKING CHANGE` no rodapé do commit:
@@ -115,28 +113,12 @@ O nome da branch deve seguir o formato:
 
 Use letras minúsculas, palavras separadas por hífen e uma descrição específica.
 
-### Exemplos
-
-```text
-feat/correcao-de-blocos
-fix/validacao-de-temperatura
-docs/atualizar-readme
-refactor/separar-services
-test/adicionar-testes-de-login
-chore/atualizar-dependencias
-```
-
-A branch `feat/correcao-de-blocos` está correta estruturalmente. Use `feat` quando a alteração adicionar ou modificar uma funcionalidade. Se for exclusivamente uma correção de erro já existente, prefira:
-
-```text
-fix/correcao-de-blocos
-```
-
 Quando fizer sentido, inclua o número da Issue:
 
 ```text
 feat/30-migrar-api
-fix/8-validar-temperatura
+fix/38-corrigir-autenticacao
+feat/31-implementar-crud-lotes
 ```
 
 Evitar nomes genéricos:
@@ -153,13 +135,13 @@ branch-do-joao
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feat/correcao-de-blocos
+git checkout -b feat/31-implementar-crud-lotes
 
 # fazer a alteração e executar os testes
 
 git add caminho/do/arquivo.js
-git commit -m "feat: adicionar correção de blocos"
-git push -u origin feat/correcao-de-blocos
+git commit -m "feat: implementar CRUD de lotes"
+git push -u origin feat/31-implementar-crud-lotes
 ```
 
 Depois, abrir um Pull Request para `main`, explicar o que foi alterado, informar como foi testado e solicitar revisão de outro integrante.
@@ -173,12 +155,12 @@ Cada Pull Request deve:
 - informar os testes executados;
 - registrar limitações ou pendências;
 - evitar misturar Backend, Frontend, Design e Artigo sem necessidade;
-- passar pela revisão de outro integrante quando exigido pelo repositório.
+- passar pela revisão de outro integrante.
 
 Quando a alteração concluir uma Issue, usar uma referência apropriada no corpo do Pull Request, por exemplo:
 
 ```text
-Closes #30
+Closes #31
 ```
 
 ## Segurança
@@ -187,4 +169,19 @@ Closes #30
 - Não colocar credenciais em commits, Issues, Pull Requests ou documentação pública;
 - Revisar código gerado por ferramentas de IA antes do commit;
 - Não descrever funcionalidades como concluídas sem validação no código e nos testes;
-- Registrar decisões importantes sem expor dados sensíveis.
+- Registrar decisões importantes sem expor dados sensíveis;
+- Usar variáveis de ambiente (`.env`) para configurações locais e adicionar `.env` ao `.gitignore`.
+
+## Documentação
+
+A documentação completa do projeto está disponível no repositório [conloq/documentation](https://github.com/conloq/documentation), organizada por área:
+
+| Área | Conteúdo |
+|---|---|
+| [Backend](https://github.com/conloq/documentation/tree/main/backend) | Arquitetura, models, rotas, issues ativas |
+| [Frontend](https://github.com/conloq/documentation/tree/main/frontend) | Preview, componentes, integração com API |
+| [Database](https://github.com/conloq/documentation/tree/main/database) | Schema MySQL, MER, SQL, divergências de schema |
+| [Artigo](https://github.com/conloq/documentation/tree/main/artigo) | Artigo científico, metas de validação, referências |
+| [Design](https://github.com/conloq/documentation/tree/main/design) | Guia de estilos, Figma, pitch, landing page |
+| [Infraestrutura](https://github.com/conloq/documentation/tree/main/infraestrutura) | Rede, DevOps, automação |
+| [Geral](https://github.com/conloq/documentation/tree/main/geral) | Decisões técnicas, entregas do PI, boas práticas |
