@@ -29,6 +29,14 @@ Repositórios relacionados:
 - [Documentação do banco de dados](https://github.com/conloq/database)
 - [Documentação do projeto](https://github.com/conloq/documentation)
 
+## Papéis da equipe
+
+| Papel | Integrante |
+|---|---|
+| **Product Manager (PM)** | Haimon Cugler Vieira |
+| **Product Owner (PO)** | João Alexandre Pinto Camargo |
+| **Desenvolvedores** | João Alexandre Pinto Camargo (Backend) · Kevin da Silva Oliveira (Design/Frontend) · Jocieli Pontes Domingues da Silva (Artigo e documentação) · Haimon Cugler Vieira (Frontend) |
+
 ## Organização da equipe
 
 - **Backend:** APIs, banco de dados, regras de negócio, autenticação JWT/Argon2id e integrações;
