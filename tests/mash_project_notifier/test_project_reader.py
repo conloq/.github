@@ -102,3 +102,25 @@ def test_read_project_rejects_duplicate_item_ids():
 
     with pytest.raises(ProjectDataError, match="duplicate"):
         read_project(client, "project-id")
+
+
+def test_backlog_item_without_sprint_keeps_data_quality_ok():
+    backlog = item("item-1", 1)
+    backlog["fieldValues"]["nodes"].pop()
+    client = FakeClient([_payload([backlog])])
+
+    result = read_project(client, "project-id")
+
+    assert result["items"][0]["sprint"] is None
+    assert result["data_quality"] == "ok"
+
+
+def test_item_without_status_marks_data_as_partial():
+    no_status = item("item-1", 1)
+    no_status["fieldValues"]["nodes"].pop(0)
+    client = FakeClient([_payload([no_status])])
+
+    result = read_project(client, "project-id")
+
+    assert result["data_quality"] == "partial"
+    assert result["missing_field_items"] == ["item-1"]

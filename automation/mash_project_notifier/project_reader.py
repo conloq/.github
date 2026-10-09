@@ -168,7 +168,7 @@ def read_project(client: Any, project_id: str) -> dict[str, Any]:
     missing = [
         item["item_id"]
         for item in all_items
-        if not item.get("sprint") or not item.get("status_id")
+        if not item.get("status_id")
     ]
     return {
         "project": project,
