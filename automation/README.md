@@ -22,6 +22,13 @@ Os cartões do Project são a unidade de contagem. Pull Requests e commits são 
 - Sprint terminando com tarefas restantes;
 - Sprint com todos os cartões em `Done`.
 
+## Onde cada aviso é publicado
+
+- Resumo diário e avisos de Sprint: na Issue central, em `conloq/.github`.
+- Cartão que entra ou sai de `Done` e PR mesclada: na própria Issue do `conloq/mash` a que se referem.
+
+Todo aviso marca `@conloq/mash`. O GitHub não notifica o autor de um comentário: quem é dono do token não recebe os avisos, a menos que ative "Include your own updates" nas configurações de notificação por e-mail.
+
 ## Configuração segura
 
 A automação não deve usar o token pessoal do agente nem gravar credenciais no repositório.
@@ -37,6 +44,8 @@ MASH_PROJECT_TOKEN
 Preferência: token de instalação de um GitHub App com permissões mínimas para ler o Project organizacional, ler PRs dos repositórios permitidos e comentar Issues somente nos destinos definidos.
 
 Alternativa: token dedicado com acesso ao Project e aos repositórios necessários. O valor deve ser colado apenas na tela de Secret do GitHub.
+
+Em uso desde 09/10/2026: token clássico do Tech Lead, com os escopos `read:project` e `public_repo`. Quando ele vence, a leitura do Project responde HTTP 401 e o workflow falha; basta gerar outro e regravar o Secret.
 
 ### 2. Variables do repositório
 
@@ -92,6 +101,7 @@ Nunca coloque o valor do token em arquivo, commit, log ou mensagem.
 ## Regras de segurança
 
 - Falha de leitura do Project bloqueia publicação live.
+- Cartão sem `Status` torna os dados parciais e bloqueia a publicação live. Cartão sem Sprint é backlog e não bloqueia.
 - Dados parciais não são apresentados como contagem completa.
 - Títulos e corpos de Issues/PRs são tratados como dados; menções externas são neutralizadas.
 - PR sem vínculo explícito com `conloq/mash#N` não é atribuído a uma tarefa.
