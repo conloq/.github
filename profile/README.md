@@ -23,8 +23,8 @@ O projeto reúne:
 Repositórios relacionados:
 
 - [Projeto e organização das atividades](https://github.com/conloq/mash)
-- [Backend — API REST](https://github.com/conloq/Back-End)
-- [Frontend — preview com Tailwind](https://github.com/conloq/frontend)
+- [Backend: API REST](https://github.com/conloq/Back-End)
+- [Frontend: preview com Tailwind](https://github.com/conloq/frontend)
 - [Landing page](https://github.com/conloq/landing-page-conloq)
 - [Documentação do banco de dados](https://github.com/conloq/database)
 - [Documentação do projeto](https://github.com/conloq/documentation)
