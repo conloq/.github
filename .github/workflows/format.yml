@@ -1,0 +1,88 @@
+name: Format check
+
+on:
+  workflow_call:
+    inputs:
+      formatter:
+        description: "prettier | ruff | both"
+        required: true
+        type: string
+      working_directory:
+        required: false
+        type: string
+        default: "."
+      prettier_version:
+        required: false
+        type: string
+        default: "3"
+      ruff_version:
+        required: false
+        type: string
+        default: "0.7"
+      node_version:
+        required: false
+        type: string
+        default: "20"
+      python_version:
+        required: false
+        type: string
+        default: "3.12"
+
+jobs:
+  prettier:
+    if: inputs.formatter == 'prettier' || inputs.formatter == 'both'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+      - run: npm install -g prettier@${{ inputs.prettier_version }}
+      - name: Check formatting
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
+        run: |
+          set +e
+          OUT=$(prettier --check . 2>&1)
+          STATUS=$?
+          if [ $STATUS -ne 0 ]; then
+            echo "::error::Prettier encontrou arquivos fora do padrão"
+            echo ""
+            echo "Arquivos afetados:"
+            echo "$OUT" | grep -E '^\[warn\]' | sed 's/^\[warn\] /  /'
+            echo ""
+            echo "::group::diff (o que o Prettier mudaria)"
+            prettier --write . >/dev/null 2>&1
+            git --no-pager diff --stat
+            git --no-pager diff | head -200
+            echo "::endgroup::"
+            echo ""
+            echo "::error::Corrija com: npx prettier --write ."
+            exit 1
+          fi
+          echo "Prettier: OK"
+
+  ruff:
+    if: inputs.formatter == 'ruff' || inputs.formatter == 'both'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+      - run: pip install "ruff==${{ inputs.ruff_version }}"
+      - name: Ruff check
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          ruff check --output-format=github . || {
+            echo "::error::Ruff check falhou — corrija com: ruff check --fix ."
+            ruff check --diff . || true
+            exit 1
+          }
+      - name: Ruff format check
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          ruff format --check --diff . || {
+            echo "::error::Ruff format: arquivos fora do padrão — corrija com: ruff format ."
+            exit 1
+          }
