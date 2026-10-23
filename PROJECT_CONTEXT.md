@@ -17,7 +17,7 @@ Use this index before non-trivial work. It points to sources; it is not a snapsh
 | [`conloq/Back-End`](https://github.com/conloq/Back-End) | Mash REST API; owns business rules and executable schema evolution | Yes | `app.js`, `routes/`, `controllers/`, `services/`, `migrations/`, `config/swagger.json` |
 | [`conloq/frontend`](https://github.com/conloq/frontend) | Mash web UI; browser consumes the API | Yes | `index.js`, `public/js/app.js`, `views/`, `package.json` |
 | [`conloq/landing-page-conloq`](https://github.com/conloq/landing-page-conloq) | Institutional/commercial presentation of the complete product vision | Static presentation, not Mash runtime | `index.html`, `assets/` |
-| [`conloq/conloq`](https://github.com/conloq/conloq) | Institutional repository of the Conloq organization | No Mash runtime | `README.md`, `pyproject.toml`, `src/conloq/` |
+| [`conloq/conloq`](https://github.com/conloq/conloq) | Institutional repository of the Conloq organization | No Mash runtime | `pyproject.toml`, `src/conloq/` (the current `README.md` is empty) |
 | [`conloq/database`](https://github.com/conloq/database) | Database documentation and reference artifacts | No | `README.md`, SQL/diagram/evidence files; not schema authority |
 | [`conloq/documentation`](https://github.com/conloq/documentation) | Human-facing technical, functional, and academic documentation | No | `README.md`, area guides, `geral/` |
 | [`conloq/mash`](https://github.com/conloq/mash) | Issue/roadmap home; legacy application code is not the current runtime authority | Legacy/work tracking | Issue #66 for current roadmap/decisions; verify implementation in active runtime repos |
@@ -28,7 +28,7 @@ Read each repo’s `AGENTS.md` when present. Local entrypoints add repo-specific
 
 - Global entrypoint: [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md).
 - Shared-repo instructions: [`AGENTS.md`](./AGENTS.md).
-- Local entrypoints, when present: [frontend](https://github.com/conloq/frontend/blob/main/AGENTS.md), [landing page](https://github.com/conloq/landing-page-conloq/blob/main/AGENTS.md), and [institutional repo](https://github.com/conloq/conloq/blob/main/AGENTS.md).
+- Local entrypoints, when present: [Back-End](https://github.com/conloq/Back-End/blob/main/AGENTS.md), [frontend](https://github.com/conloq/frontend/blob/main/AGENTS.md), [landing page](https://github.com/conloq/landing-page-conloq/blob/main/AGENTS.md), and [institutional repo](https://github.com/conloq/conloq/blob/main/AGENTS.md).
 - Cross-repo architecture and evidence: [`documentation/geral/architecture.md`](https://github.com/conloq/documentation/blob/main/geral/architecture.md).
 - Context lifecycle: [`documentation/geral/context-lifecycle.md`](https://github.com/conloq/documentation/blob/main/geral/context-lifecycle.md).
 - Human documentation index: [`conloq/documentation/README.md`](https://github.com/conloq/documentation/blob/main/README.md).
