@@ -36,3 +36,15 @@ def test_locate_current_and_next_sprint_uses_calendar_dates():
     assert result["current"]["endDate"] == "2026-09-15"
     assert result["next"]["title"] == "Sprint 3"
     assert result["days_until_next"] == 15
+
+
+def test_closed_card_without_status_is_not_counted_as_remaining():
+    items = [
+        {"item_id": "item-1", "sprint": "Sprint 2", "status_id": "done", "status_name": "Done", "repository": "conloq/mash"},
+        {"item_id": "item-2", "sprint": "Sprint 2", "status_id": None, "state": "CLOSED", "repository": "conloq/mash"},
+        {"item_id": "item-3", "sprint": "Sprint 2", "status_id": None, "state": "OPEN", "repository": "conloq/mash"},
+    ]
+
+    result = calculate_sprint_metrics(items, "Sprint 2", "done")
+
+    assert (result["total"], result["done"], result["remaining"]) == (2, 1, 1)

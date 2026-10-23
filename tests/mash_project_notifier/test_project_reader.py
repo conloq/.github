@@ -124,3 +124,15 @@ def test_item_without_status_marks_data_as_partial():
 
     assert result["data_quality"] == "partial"
     assert result["missing_field_items"] == ["item-1"]
+
+
+def test_closed_item_without_status_keeps_data_quality_ok():
+    closed = item("item-1", 1)
+    closed["fieldValues"]["nodes"].pop(0)
+    closed["content"]["state"] = "CLOSED"
+    client = FakeClient([_payload([closed])])
+
+    result = read_project(client, "project-id")
+
+    assert result["data_quality"] == "ok"
+    assert result["missing_field_items"] == []
