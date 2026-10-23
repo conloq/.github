@@ -53,9 +53,9 @@ Repositórios relacionados:
 5. Executar os testes e as validações disponíveis.
 6. Criar commits seguindo o padrão de Conventional Commits.
 7. Enviar a branch e abrir um Pull Request para `main`.
-8. Solicitar revisão de outro integrante.
-9. Corrigir os comentários, resolver as conversas e aguardar a aprovação.
-10. Fazer o merge somente quando os critérios do repositório forem atendidos.
+8. A revisão de outro integrante é recomendada, mas não é aprovação obrigatória para merge.
+9. Corrigir comentários pertinentes e resolver conversas quando exigido pelas proteções/rulesets atuais; consulte o GitHub ao vivo.
+10. Fazer merge por integrante autorizado somente após os checks e critérios de proteção vigentes serem atendidos; confirme-os ao vivo.
 
 Não enviar commits diretamente para `main`.
 
@@ -152,7 +152,7 @@ git commit -m "feat: implementar CRUD de lotes"
 git push -u origin feat/31-implementar-crud-lotes
 ```
 
-Depois, abrir um Pull Request para `main`, explicar o que foi alterado, informar como foi testado e solicitar revisão de outro integrante.
+Depois, abrir um Pull Request para `main`, explicar o que foi alterado e informar como foi testado. Revisão por outro integrante é recomendada, mas aprovação humana obrigatória não é exigida.
 
 ## Pull Requests
 
@@ -163,7 +163,7 @@ Cada Pull Request deve:
 - informar os testes executados;
 - registrar limitações ou pendências;
 - evitar misturar Backend, Frontend, Design e Artigo sem necessidade;
-- passar pela revisão de outro integrante.
+- passar pelos checks e gates efetivamente exigidos pelo repositório; revisão por outro integrante é recomendada, mas aprovação humana não é requisito obrigatório.
 
 Quando a alteração concluir uma Issue, usar uma referência apropriada no corpo do Pull Request, por exemplo:
 
