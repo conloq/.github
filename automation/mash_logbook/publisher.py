@@ -18,13 +18,13 @@ def _get_or_none(client, path: str):
         raise
 
 
-def publish(client, markdown: str, since: date, until: date, repository: str = config.DOCS_REPOSITORY) -> str:
+def publish(client, markdown: str, since: date, until: date, repository: str = config.LOGBOOK_REPOSITORY) -> str:
     """Grava o diário numa branch do repositório de documentação e abre (ou reaproveita) o Pull Request.
 
     Rodar de novo para a mesma semana atualiza o arquivo na mesma branch e no mesmo PR. Devolve a URL do PR.
     """
     periodo = f"{since:%d/%m} a {until:%d/%m/%Y}"
-    path = f"{config.DOCS_DIR}/{since:%Y-%m-%d}.md"
+    path = f"{config.LOGBOOK_DIR}/{since:%Y-%m-%d}.md"
     branch = f"diario-de-bordo/{since:%Y-%m-%d}"
     base = client.rest("GET", f"/repos/{repository}")["default_branch"]
 

@@ -6,7 +6,7 @@ import pytest
 from automation.mash_logbook import publisher
 from automation.mash_project_notifier.github_client import GitHubAPIError
 
-REPO = "/repos/conloq/documentation"
+REPO = "/repos/conloq/logbook-backup"
 
 
 class FakeClient:
@@ -31,7 +31,7 @@ class FakeClient:
         if method == "GET" and "/pulls?" in path:
             return self.open_pulls
         if method == "POST" and path.endswith("/pulls"):
-            return {"html_url": "https://github.com/conloq/documentation/pull/9"}
+            return {"html_url": "https://github.com/conloq/logbook-backup/pull/9"}
         return {}
 
 
@@ -44,7 +44,7 @@ def test_first_run_creates_branch_file_and_pull_request():
     assert put["branch"] == "diario-de-bordo/2026-10-12" and "sha" not in put
     assert put["message"] == "docs(diario-de-bordo): 12/10 a 18/10/2026"
     assert base64.b64decode(put["content"]).decode() == "# Diário\n"
-    assert any(m == "PUT" and path == f"{REPO}/contents/geral/diario-de-bordo/2026-10-12.md" for m, path, _ in client.calls)
+    assert any(m == "PUT" and path == f"{REPO}/contents/diario-de-bordo/2026-10-12.md" for m, path, _ in client.calls)
     pr = next(p for m, path, p in client.calls if m == "POST" and path.endswith("/pulls"))
     assert (pr["head"], pr["base"]) == ("diario-de-bordo/2026-10-12", "main")
 
