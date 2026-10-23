@@ -26,7 +26,7 @@ def facts(entries: list[Entry]) -> list[str]:
 def plain_summary(entries: list[Entry]) -> str:
     """Resumo sem IA, montado só dos dados: usado quando nenhum provedor responde."""
     if not entries:
-        return "Nenhum commit na semana."
+        return "Nenhum commit no período."
     pessoas = Counter(e.author for e in entries)
     frentes = Counter(e.frente for e in entries)
     issues = sorted({i for e in entries for i in e.issues}, key=lambda i: (i.split("#")[0], int(i.split("#")[1])))
@@ -42,7 +42,7 @@ def plain_summary(entries: list[Entry]) -> str:
 
 def render_week(entries: list[Entry], since: date, until: date, summary: Summary, failures: list[str]) -> str:
     out = [f"# Diário de Bordo: {since:%d/%m} a {until:%d/%m/%Y}", ""]
-    out += ["## Resumo da semana", ""]
+    out += ["## Resumo do período", ""]
     if summary.text:
         out += [summary.text, "", f"> Resumo redigido por IA ({summary.provider}) a partir dos commits da tabela abaixo. Revisar antes de aprovar o Pull Request.", ""]
     else:

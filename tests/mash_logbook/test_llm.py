@@ -86,3 +86,9 @@ def test_load_providers_reads_json_or_uses_defaults():
     assert [p.name for p in config.load_providers({})] == ["groq", "openrouter"]
     custom = config.load_providers({"LOGBOOK_LLM_PROVIDERS": json.dumps([{"name": "x", "base_url": "u", "model": "m", "key_env": "K"}])})
     assert custom == [config.Provider("x", "u", "m", "K")]
+
+
+def test_clean_replaces_long_and_short_dashes():
+    from automation.mash_logbook.llm import _clean
+
+    assert _clean("Backend – CORS liberado — porta 4000") == "Backend, CORS liberado, porta 4000"
