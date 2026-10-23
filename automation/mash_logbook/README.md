@@ -41,9 +41,9 @@ Sem `--since` e `--until`, usa a semana anterior (segunda a domingo, horário de
 
 ## Publicação
 
-Com `--publish`, o diário vai para `geral/diario-de-bordo/AAAA-MM-DD.md` (data do primeiro dia) no `conloq/documentation`, numa branch `diario-de-bordo/AAAA-MM-DD`, com Pull Request para revisão. Rodar de novo para a mesma semana atualiza o arquivo no mesmo PR. O commit do diário começa com `docs(diario-de-bordo):` e fica fora da coleta das semanas seguintes.
+Com `--publish`, o diário vai para `diario-de-bordo/AAAA-MM-DD.md` (data do primeiro dia) no `conloq/logbook-backup`, numa branch `diario-de-bordo/AAAA-MM-DD`, com Pull Request para revisão. Rodar de novo para a mesma semana atualiza o arquivo no mesmo PR. O commit do diário começa com `docs(diario-de-bordo):` e fica fora da coleta das semanas seguintes.
 
-O workflow `.github/workflows/mash-logbook.yml` roda toda segunda às 09:00 de São Paulo e publica a semana anterior. Pelo Actions, "Run workflow" aceita `since`, `until` e `dry_run`: com `dry_run` marcado (padrão), o diário só aparece no resumo da execução. O `MASH_PROJECT_TOKEN` precisa poder criar branch e Pull Request no `conloq/documentation`.
+O workflow `.github/workflows/mash-logbook.yml` roda toda segunda às 09:00 de São Paulo e publica a semana anterior. Pelo Actions, "Run workflow" aceita `since`, `until` e `dry_run`: com `dry_run` marcado (padrão), o diário só aparece no resumo da execução. O `MASH_PROJECT_TOKEN` precisa poder criar branch e Pull Request no `conloq/logbook-backup`.
 
 ## Testes
 

@@ -74,8 +74,8 @@ DEFAULT_PROVIDERS = (
 )
 
 # Onde o diário é publicado, por branch e Pull Request.
-DOCS_REPOSITORY = "conloq/documentation"
-DOCS_DIR = "geral/diario-de-bordo"
+LOGBOOK_REPOSITORY = "conloq/logbook-backup"
+LOGBOOK_DIR = "diario-de-bordo"
 # Prefixo do commit do próprio diário: a coleta das semanas seguintes o ignora.
 COMMIT_PREFIX = "docs(diario-de-bordo):"
 

@@ -41,7 +41,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--output", help="arquivo Markdown de saída; sem ele, imprime no terminal")
     parser.add_argument("--no-ai", action="store_true", help="não chama nenhum provedor de IA")
     parser.add_argument(
-        "--publish", action="store_true", help=f"abre o Pull Request do diário em {config.DOCS_REPOSITORY}"
+        "--publish", action="store_true", help=f"abre o Pull Request do diário em {config.LOGBOOK_REPOSITORY}"
     )
     return parser.parse_args(argv)
 
