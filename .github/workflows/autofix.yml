@@ -1,0 +1,78 @@
+# Workflow reusable de auto-fix — chamável por qualquer repo da org.
+# Uso: uses: conloq/.github/.github/workflows/autofix.yml@main
+
+name: autofix.ci  # nome exigido pelo autofix.ci para identificar o workflow
+
+on:
+  workflow_call:
+    inputs:
+      formatter:
+        description: "prettier | ruff | both"
+        required: true
+        type: string
+      working_directory:
+        required: false
+        type: string
+        default: "."
+      node_version:
+        required: false
+        type: string
+        default: "20"
+      python_version:
+        required: false
+        type: string
+        default: "3.12"
+      prettier_version:
+        required: false
+        type: string
+        default: "3"
+      ruff_version:
+        required: false
+        type: string
+        default: "0.7"
+
+permissions:
+  contents: read
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---------- Prettier ----------
+      - if: inputs.formatter == 'prettier' || inputs.formatter == 'both'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      - if: inputs.formatter == 'prettier' || inputs.formatter == 'both'
+        name: Install Prettier
+        run: npm install -g prettier@${{ inputs.prettier_version }}
+
+      - if: inputs.formatter == 'prettier' || inputs.formatter == 'both'
+        name: Apply Prettier
+        working-directory: ${{ inputs.working_directory }}
+        run: prettier --write .
+
+      # ---------- Ruff ----------
+      - if: inputs.formatter == 'ruff' || inputs.formatter == 'both'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - if: inputs.formatter == 'ruff' || inputs.formatter == 'both'
+        name: Install Ruff
+        run: pip install "ruff==${{ inputs.ruff_version }}"
+
+      - if: inputs.formatter == 'ruff' || inputs.formatter == 'both'
+        name: Apply Ruff
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          ruff check --fix-only . || true
+          ruff format .
+
+      # ---------- Commit via autofix.ci ----------
+      - uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a
+        with:
+          fail-fast: false
