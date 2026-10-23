@@ -1,0 +1,71 @@
+name: Mash logbook
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/mash-logbook.yml"
+      - "automation/mash_logbook/**"
+      - "tests/mash_logbook/**"
+  workflow_dispatch:
+    inputs:
+      since:
+        description: "Primeiro dia (AAAA-MM-DD); vazio usa a semana anterior"
+        required: false
+        type: string
+      until:
+        description: "Último dia, inclusive (AAAA-MM-DD); vazio usa a semana anterior"
+        required: false
+        type: string
+      dry_run:
+        description: "Gerar e mostrar no resumo da execução sem abrir Pull Request"
+        required: true
+        default: true
+        type: boolean
+  schedule:
+    - cron: "0 12 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mash-logbook
+  cancel-in-progress: false
+
+jobs:
+  logbook:
+    name: Generate Mash logbook
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout central automation
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+
+      - name: Run regression tests
+        run: python -m pytest -q tests/mash_logbook
+
+      - name: Generate and publish the week
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          MASH_PROJECT_TOKEN: ${{ secrets.MASH_PROJECT_TOKEN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          SINCE: ${{ inputs.since }}
+          UNTIL: ${{ inputs.until }}
+          # Agendado publica; manual só publica com dry_run desmarcado.
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+          PYTHONPATH: .
+        shell: bash
+        run: |
+          args=(--output diario.md)
+          if [[ -n "$SINCE" && -n "$UNTIL" ]]; then args+=(--since "$SINCE" --until "$UNTIL"); fi
+          if [[ "$DRY_RUN" != "true" ]]; then args+=(--publish); fi
+          python -m automation.mash_logbook.main "${args[@]}"
+          cat diario.md >> "$GITHUB_STEP_SUMMARY"
