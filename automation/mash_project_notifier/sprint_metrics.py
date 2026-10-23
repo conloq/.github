@@ -31,6 +31,9 @@ def calculate_sprint_metrics(
     for item in items:
         if _sprint_title(item) != sprint_title:
             continue
+        # Fechada sem Status (duplicada ou não planejada): saiu da Sprint, como em project_reader.
+        if not item.get("status_id") and item.get("state") in ("CLOSED", "MERGED"):
+            continue
         item_id = str(item.get("item_id") or item.get("id") or "")
         if not item_id:
             raise MetricsError("Project item without item_id")

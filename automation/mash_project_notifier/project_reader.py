@@ -165,10 +165,11 @@ def read_project(client: Any, project_id: str) -> dict[str, Any]:
                 }
             )
             known_ids.add(item["sprint_id"])
+    # Issue fechada como duplicada ou não planejada perde o Status e não conta mais na Sprint.
     missing = [
         item["item_id"]
         for item in all_items
-        if not item.get("status_id")
+        if not item.get("status_id") and item.get("state") not in ("CLOSED", "MERGED")
     ]
     return {
         "project": project,
