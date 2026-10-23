@@ -41,5 +41,5 @@ def test_run_writes_file_without_calling_ai_when_no_commits(tmp_path, capsys):
     out = tmp_path / "diario.md"
     code = main.run(["--since", "2026-10-08", "--until", "2026-10-14", "--output", str(out)], env={}, client=EmptyClient())
     assert code == 0
-    assert "Nenhum commit na semana." in out.read_text(encoding="utf-8")
+    assert "Nenhum commit no período." in out.read_text(encoding="utf-8")
     assert "0 commits" in capsys.readouterr().err

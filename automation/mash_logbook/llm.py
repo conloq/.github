@@ -12,7 +12,7 @@ from typing import Any
 from .config import Provider
 
 SYSTEM_PROMPT = (
-    "Você escreve o Diário de Bordo semanal de um projeto acadêmico de software. "
+    "Você escreve o Diário de Bordo de um projeto acadêmico de software. "
     "Use somente os fatos fornecidos. Não invente entrega, issue, número, pessoa, data nem resultado. "
     "Escreva em português do Brasil, com frases curtas e diretas, sem travessão, sem jargão e sem adjetivos de propaganda. "
     "Cite issues apenas no formato #N e somente as que aparecem nos fatos. Não use links."
@@ -39,11 +39,11 @@ class Summary:
 def build_prompt(period: str, facts: list[str]) -> str:
     return (
         f"Período: {period}.\n"
-        "Fatos da semana, um por linha (data | frente | responsável | tipo | mensagem do commit | issues | PR):\n"
+        "Fatos do período, um por linha (data | frente | responsável | tipo | mensagem do commit | issues | PR):\n"
         + "\n".join(facts)
         + "\n\nEscreva em Markdown, sem título:\n"
-        "1. Um parágrafo de resumo da semana, com 3 a 5 frases.\n"
-        "2. Uma lista chamada **Por frente**, com uma ou duas frases para cada frente que teve atividade.\n"
+        "1. Um parágrafo de resumo do período, com 3 a 5 frases.\n"
+        "2. Uma lista chamada **Por frente**, com no máximo duas frases curtas para cada frente que teve atividade. Junte os commits parecidos; não descreva commit por commit.\n"
         "Se uma frente não aparece nos fatos, não a mencione."
     )
 
@@ -69,7 +69,7 @@ def _clean(text: str) -> str:
     text = text.strip()
     if text.startswith("```"):
         text = re.sub(r"^```\w*\n?|```$", "", text).strip()
-    return text.replace("—", ",")
+    return re.sub(r"\s*[—–]\s*", ", ", text)  # travessão longo ou curto
 
 
 def summarize(
