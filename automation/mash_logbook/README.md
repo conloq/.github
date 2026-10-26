@@ -45,6 +45,8 @@ Com `--publish`, o diário vai para `diario-de-bordo/AAAA-MM-DD.md` (data do pri
 
 O workflow `.github/workflows/mash-logbook.yml` roda toda segunda às 09:00 de São Paulo e publica a semana anterior. Pelo Actions, "Run workflow" aceita `since`, `until` e `dry_run`: com `dry_run` marcado (padrão), o diário só aparece no resumo da execução. O `MASH_PROJECT_TOKEN` precisa poder criar branch e Pull Request no `conloq/logbook-backup`.
 
+Para verificar se `MASH_PROJECT_TOKEN` também pode ler o Project Mash, rode o workflow manualmente com `check_project_access` marcado. Essa opção testa a leitura do campo `Sprint`, não gera nem publica diário e não altera o Project.
+
 ## Testes
 
 ```bash
