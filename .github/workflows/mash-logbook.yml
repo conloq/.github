@@ -21,6 +21,11 @@ on:
         required: true
         default: true
         type: boolean
+      check_project_access:
+        description: "Verificar somente se MASH_PROJECT_TOKEN lê o Project Mash"
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: "0 12 * * 1"
 
@@ -51,8 +56,24 @@ jobs:
       - name: Run regression tests
         run: python -m pytest -q tests/mash_logbook
 
+      - name: Check Project Mash read access
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.check_project_access }}
+        env:
+          GH_TOKEN: ${{ secrets.MASH_PROJECT_TOKEN }}
+        shell: bash
+        run: |
+          query='query { organization(login:"conloq") { projectV2(number:2) { title fields(first:50) { nodes { ... on ProjectV2IterationField { name configuration { iterations { title startDate duration } completedIterations { title startDate duration } } } } } } } }'
+          gh api graphql -f query="$query" --jq '
+            .data.organization.projectV2 as $project
+            | [$project.fields.nodes[] | select(.name == "Sprint")] as $sprints
+            | if $project.title == "Mash" and ($sprints | length) == 1 and $sprints[0].configuration != null
+              then "Project Mash: leitura OK; configuração Sprint acessível."
+              else error("Não foi possível ler a configuração Sprint do Project Mash.")
+              end
+          '
+
       - name: Generate and publish the week
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || !inputs.check_project_access) }}
         env:
           MASH_PROJECT_TOKEN: ${{ secrets.MASH_PROJECT_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
