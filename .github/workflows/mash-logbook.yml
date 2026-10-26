@@ -27,7 +27,7 @@ on:
         default: false
         type: boolean
   schedule:
-    - cron: "0 12 * * 1"
+    - cron: "0 12 * * *"
 
 permissions:
   contents: read
@@ -72,7 +72,7 @@ jobs:
               end
           '
 
-      - name: Generate and publish the week
+      - name: Generate and publish the diaries
         if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || !inputs.check_project_access) }}
         env:
           MASH_PROJECT_TOKEN: ${{ secrets.MASH_PROJECT_TOKEN }}
@@ -82,11 +82,17 @@ jobs:
           UNTIL: ${{ inputs.until }}
           # Agendado publica; manual só publica com dry_run desmarcado.
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+          # Agendado processa as sprints encerradas; manual usa as datas informadas.
+          SPRINT: ${{ github.event_name == 'schedule' }}
           PYTHONPATH: .
         shell: bash
         run: |
-          args=(--output diario.md)
-          if [[ -n "$SINCE" && -n "$UNTIL" ]]; then args+=(--since "$SINCE" --until "$UNTIL"); fi
+          set -euo pipefail
+          args=()
+          if [[ "$SPRINT" == "true" ]]; then
+            args+=(--sprint)
+          elif [[ -n "$SINCE" && -n "$UNTIL" ]]; then
+            args+=(--since "$SINCE" --until "$UNTIL")
+          fi
           if [[ "$DRY_RUN" != "true" ]]; then args+=(--publish); fi
-          python -m automation.mash_logbook.main "${args[@]}"
-          cat diario.md >> "$GITHUB_STEP_SUMMARY"
+          python -m automation.mash_logbook.main "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"

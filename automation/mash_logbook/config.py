@@ -7,6 +7,10 @@ from dataclasses import dataclass
 LOCAL_TIMEZONE = "America/Sao_Paulo"
 DEFAULT_REPOSITORY = "conloq/mash"
 
+# Project V2 "Mash" da organização: o campo Sprint define o período de cada diário.
+PROJECT_ORGANIZATION = "conloq"
+PROJECT_NUMBER = 2
+
 # Todos os repositórios do projeto: o Diário de Bordo cobre código, documentação e planejamento.
 REPOSITORIES = (
     "conloq/Back-End",
