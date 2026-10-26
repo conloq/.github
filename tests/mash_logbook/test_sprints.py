@@ -85,6 +85,8 @@ def test_invalid_iteration_fails_without_partial_period(item):
 def test_missing_project_fails():
     with pytest.raises(config.ConfigurationError):
         sprints.parse_iterations({"data": {"organization": None}})
+    with pytest.raises(config.ConfigurationError):
+        sprints.parse_iterations({"data": {"organization": {"projectV2": None}}})
 
 
 def test_missing_sprint_field_fails():

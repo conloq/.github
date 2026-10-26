@@ -59,6 +59,8 @@ def parse_iterations(payload: dict) -> list[Sprint]:
         project = payload["data"]["organization"]["projectV2"]
     except (KeyError, TypeError):
         raise config.ConfigurationError("Project Mash (conloq #2) não encontrado na resposta do GraphQL") from None
+    if not isinstance(project, dict):
+        raise config.ConfigurationError("Project Mash (conloq #2) não encontrado na resposta do GraphQL")
     fields = [node for node in ((project.get("fields") or {}).get("nodes") or []) if isinstance(node, dict) and node.get("name") == "Sprint"]
     if len(fields) != 1:
         raise config.ConfigurationError(f"Project Mash: esperado exatamente um campo Sprint, encontrado {len(fields)}")
