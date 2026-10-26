@@ -18,6 +18,16 @@ def _get_or_none(client, path: str):
         raise
 
 
+def is_published(client, since: date, repository: str = config.LOGBOOK_REPOSITORY) -> bool:
+    """True quando o diário daquele início já está no branch padrão, não apenas num PR aberto.
+
+    Só 404 conta como ausência: erros de autenticação, rede ou servidor interrompem a execução.
+    """
+    base = client.rest("GET", f"/repos/{repository}")["default_branch"]
+    path = f"/repos/{repository}/contents/{quote(f'{config.LOGBOOK_DIR}/{since:%Y-%m-%d}.md')}?ref={quote(base, safe='')}"
+    return _get_or_none(client, path) is not None
+
+
 def publish(client, markdown: str, since: date, until: date, repository: str = config.LOGBOOK_REPOSITORY) -> str:
     """Grava o diário numa branch do repositório de documentação e abre (ou reaproveita) o Pull Request.
 
