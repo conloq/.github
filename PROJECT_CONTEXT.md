@@ -15,7 +15,7 @@ Use this index before non-trivial work. It points to sources; it is not a snapsh
 |---|---|---:|---|
 | [`conloq/.github`](https://github.com/conloq/.github) | Organization profile, templates, shared workflows, and GitHub automation | No product runtime | `profile/README.md`, `.github/workflows/`, `automation/README.md` |
 | [`conloq/Back-End`](https://github.com/conloq/Back-End) | Mash REST API; owns business rules and executable schema evolution | Yes | `app.js`, `routes/`, `controllers/`, `services/`, `migrations/`, `config/swagger.json` |
-| [`conloq/frontend`](https://github.com/conloq/frontend) | Mash web UI; Express EJS server with server-side session consumes the API | Yes | `index.js`, `controllers/pageController.js`, `views/`, `package.json` |
+| [`conloq/frontend`](https://github.com/conloq/frontend) | Mash web UI; Next.js (React) app whose browser calls the API with a Bearer token | Yes | `src/pages/`, `src/components/`, `src/services/`, `package.json` |
 | [`conloq/landing-page-conloq`](https://github.com/conloq/landing-page-conloq) | Institutional/commercial presentation of the complete product vision | Static presentation, not Mash runtime | `index.html`, `assets/` |
 | [`conloq/conloq`](https://github.com/conloq/conloq) | Institutional repository of the Conloq organization | No Mash runtime | `README.md`, `pyproject.toml`, `src/conloq/` |
 | [`conloq/database`](https://github.com/conloq/database) | Database documentation and reference artifacts | No | `README.md`, SQL/diagram/evidence files; not schema authority |
@@ -54,9 +54,8 @@ When sources materially disagree about scope, architecture, contracts, security,
 
 ```mermaid
 flowchart LR
-  BROWSER[Browser] -->|HttpOnly session cookie| FE[frontend Express SSR]
-  FE -->|HTTP API / Bearer token| BE[Back-End REST API]
-  FE -->|sessions table| DB[(MySQL schema/runtime)]
+  BROWSER[Browser] -->|loads app| FE[frontend Next.js]
+  BROWSER -->|HTTP API / Bearer token| BE[Back-End REST API]
   BE -->|Sequelize migrations and DB access| DB
   DOC[documentation] -. describes / references .-> BE
   DBREF[database repo] -. schema reference, not executable authority .-> BE
