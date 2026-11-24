@@ -65,9 +65,10 @@ def build_run_plan(
     done_id = _done_option_id(project)
     calendar = locate_current_and_next_sprint(project.get("iterations") or [], today)
     current = calendar.get("current")
-    if not current:
-        raise MetricsError("no current Sprint for the supplied date")
-    current_metrics = calculate_sprint_metrics(items, current["title"], done_id)
+    # Between Sprints (or after the last one) there is nothing to summarise, but
+    # status and PR events still have to be delivered; failing here kept the
+    # workflow red every 15 minutes after the last iteration ended.
+    current_metrics = calculate_sprint_metrics(items, current["title"], done_id) if current else {}
     previous_items = previous.get("items") or {}
     status_events = detect_status_events(previous_items, current_items, done_id)
     calendar_events = detect_calendar_events(calendar, current_metrics, today, daily=daily)
@@ -163,7 +164,10 @@ def _now_utc() -> datetime:
 
 
 def _is_daily_window(now_local: datetime, daily_hour: int) -> bool:
-    return now_local.hour == daily_hour and now_local.minute < 15
+    # Scheduled runs are often delayed past a 15-minute window, so any run from
+    # daily_hour on qualifies; the event key carries the date, so the summary
+    # is still published once per day.
+    return now_local.hour >= daily_hour
 
 
 def _load_state(client: GitHubClient, settings: Settings) -> tuple[dict[str, Any], dict[str, Any] | None]:

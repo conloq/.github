@@ -1,6 +1,6 @@
-from datetime import date
+from datetime import date, datetime
 
-from automation.mash_project_notifier.main import _pr_events, build_run_plan
+from automation.mash_project_notifier.main import _is_daily_window, _pr_events, build_run_plan
 
 
 def project(items):
@@ -52,6 +52,37 @@ def test_existing_snapshot_detects_done_transition_and_next_sprint_distance():
     assert plan["calendar"]["days_until_next"] == 15
     assert [event["kind"] for event in plan["events"]] == ["task_done"]
     assert plan["events"][0]["event_key"] == "task_done:item-34:ready:done"
+
+
+def test_after_last_sprint_still_detects_status_events_without_daily_summary():
+    previous = {
+        "items": {"item-34": {"status_id": "ready", "status_name": "Ready", "sprint": "Sprint 3"}},
+        "sent_keys": [],
+    }
+
+    plan = build_run_plan(project([item("item-34", "done", "Done")]), date(2026, 11, 24), previous, daily=True)
+
+    assert plan["calendar"]["current"] is None
+    assert plan["metrics"] == {}
+    assert [event["kind"] for event in plan["events"]] == ["task_done"]
+
+
+def test_daily_window_accepts_delayed_scheduled_runs():
+    assert _is_daily_window(datetime(2026, 11, 24, 8, 59), 9) is False
+    assert _is_daily_window(datetime(2026, 11, 24, 9, 0), 9) is True
+    assert _is_daily_window(datetime(2026, 11, 24, 10, 47), 9) is True
+
+
+def test_daily_summary_is_published_once_per_day():
+    previous = {
+        "items": {"item-34": {"status_id": "ready", "status_name": "Ready", "sprint": "Sprint 2"}},
+        "sent_keys": ["sprint_started:Sprint 2:2026-09-01"],
+    }
+    first = build_run_plan(project([item("item-34", "ready", "Ready")]), date(2026, 9, 1), previous, daily=True)
+    assert [event["kind"] for event in first["events"]] == ["daily_summary"]
+
+    again = build_run_plan(project([item("item-34", "ready", "Ready")]), date(2026, 9, 1), first["snapshot"], daily=True)
+    assert again["events"] == []
 
 
 def test_backend_pr_is_evidence_for_planning_issue_without_changing_task_count():

@@ -23,7 +23,18 @@ def target_for_event(
 
 
 def publish_and_verify(client: Any, repository: str, issue_number: int, body: str) -> dict[str, Any]:
-    """Create a comment, then read it back from the exact Issue."""
+    """Create a comment, then read it back from the exact Issue.
+
+    If a comment with the same event marker already exists (a previous run
+    published it but failed to save state), reuse it instead of posting again.
+    """
+    from .deduplication import extract_event_keys
+
+    keys = extract_event_keys(body)
+    if keys:
+        for comment in client.list_comments(repository, issue_number):
+            if keys & extract_event_keys(str(comment.get("body") or "")):
+                return {"id": comment.get("id"), "url": comment.get("html_url") or comment.get("url"), "verified": True, "reused": True}
     created = client.create_comment(repository, issue_number, body)
     comment_id = created.get("id")
     if not comment_id:
