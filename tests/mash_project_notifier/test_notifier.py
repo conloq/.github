@@ -62,6 +62,20 @@ def test_publish_and_verify_reads_created_comment_back():
     ]
 
 
+def test_publish_and_verify_reuses_comment_with_same_event_marker():
+    from automation.mash_project_notifier.deduplication import event_marker
+
+    client = FakeClient()
+    body = "resumo\n\n" + event_marker("daily_summary:Sprint 7:2026-11-24")
+    first = publish_and_verify(client, "conloq/.github", 1, body)
+
+    again = publish_and_verify(client, "conloq/.github", 1, body)
+
+    assert again["reused"] is True
+    assert again["id"] == first["id"]
+    assert [call[0] for call in client.calls].count("create") == 1
+
+
 def test_state_comment_is_found_and_updated_without_creating_another_state_comment():
     client = FakeClient()
     client.create_comment("conloq/.github", 7, "<!-- mash-notifier-state:v1 -->\n```json\n{\"version\":1}\n```")
